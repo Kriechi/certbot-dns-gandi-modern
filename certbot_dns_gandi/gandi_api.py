@@ -4,20 +4,24 @@ import requests
 from dataclasses import dataclass
 from certbot.plugins import dns_common
 
+
 @dataclass
 class _GandiConfig:
     sharing_id: str
     personal_access_token: Optional[str]
 
+
 @dataclass
 class _BaseDomain:
     fqdn: str
 
-def get_config(sharing_id, personal_access_token: Optional[str]=None):
+
+def get_config(sharing_id, personal_access_token: Optional[str] = None):
     return _GandiConfig(
         sharing_id=sharing_id,
         personal_access_token=personal_access_token,
     )
+
 
 def _get_json(response):
     try:
@@ -32,7 +36,9 @@ def _get_response_message(response, default="<No reason given>"):
 
 
 def _headers(cfg):
-    assert cfg.personal_access_token is not None, "Personal access token is required for authentication"
+    assert cfg.personal_access_token is not None, (
+        "Personal access token is required for authentication"
+    )
     auth = "Bearer " + cfg.personal_access_token
     return {
         "Content-Type": "application/json",
@@ -41,7 +47,8 @@ def _headers(cfg):
 
 
 def _get_url(*segs):
-    return f'https://api.gandi.net/v5/livedns/{"/".join(segs)}'
+    return f"https://api.gandi.net/v5/livedns/{'/'.join(segs)}"
+
 
 def _request(cfg, method, segs, **kw):
     headers = _headers(cfg)
@@ -49,6 +56,7 @@ def _request(cfg, method, segs, **kw):
     return requests.request(
         method, url, headers=headers, params={"sharing_id": cfg.sharing_id}, **kw
     )
+
 
 def _get_base_domain(cfg, domain):
     for candidate_base_domain in dns_common.base_domain_name_guesses(domain):
@@ -63,7 +71,7 @@ def _get_base_domain(cfg, domain):
 
 def _get_relative_name(base_domain, name):
     suffix = "." + base_domain.fqdn
-    return name[: - len(suffix)] if name.endswith(suffix) else None
+    return name[: -len(suffix)] if name.endswith(suffix) else None
 
 
 def _get_txt_record(cfg, base_domain, relative_name):
@@ -88,8 +96,8 @@ def _update_txt_record(cfg, base_domain, relative_name, rrset):
         json={"rrset_values": rrset},
     )
 
-def _update_record(cfg, domain, name, request_runner):
 
+def _update_record(cfg, domain, name, request_runner):
     base_domain = _get_base_domain(cfg, domain)
     if base_domain is None:
         return f'Unable to get base domain for "{domain}"'

@@ -3,15 +3,16 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "certbot-dns-gandi"
-description = "Certbot plugin for authentication using Gandi LiveDNS"
+name = "certbot-dns-gandi-modern"
+description = "Certbot plugin for authentication using Gandi LiveDNS - modern"
 readme = "README.md"
 license = "MIT"
 dynamic = ["version"]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 
 authors = [
     { name = "Yohann Leon", email = "yohann@leon.re" },
+    { name = "Thomas Kriechbaumer", email = "thomas@kriechbaumer.name" },
 ]
 
 dependencies = [
@@ -27,7 +28,6 @@ classifiers = [
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -45,7 +45,7 @@ classifiers = [
 dns-gandi = "certbot_dns_gandi.main:Authenticator"
 
 [project.urls]
-Homepage = "https://github.com/obynio/certbot-plugin-gandi"
+Homepage = "https://github.com/Kriechi/certbot-dns-gandi-modern"
 
 [tool.hatch.version]
 path = "certbot_dns_gandi/__init__.py"

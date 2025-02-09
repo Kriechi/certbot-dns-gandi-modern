@@ -1,8 +1,8 @@
-# Certbot plugin for authentication using Gandi LiveDNS
+# Certbot plugin for authentication using Gandi LiveDNS - modern
 
-This is a plugin for [Certbot](https://certbot.eff.org/) that uses the Gandi
-LiveDNS API to allow [Gandi](https://www.gandi.net/)
-customers to prove control of a domain name.
+This is a plugin for [Certbot](https://certbot.eff.org/) that uses the Gandi LiveDNS API to allow [Gandi](https://www.gandi.net/) customers to prove control of a domain name.
+
+This plugin is originally based on https://github.com/obynio/certbot-plugin-gandi by Yohann Leon. Due to [some missing bugfixes](https://github.com/obynio/certbot-plugin-gandi/pull/50) I have forked and published this "modern" version of the plugin to make it usable again.
 
 > [!IMPORTANT]  
 > In order to match the naming convention for certbot plugin, the plugin has been repackaged under a new name `certbot-dns-plugin` and legacy users of the previous package will receive the new package as a dependency.
@@ -13,29 +13,30 @@ customers to prove control of a domain name.
   
    Your Gandi personal access token requires minimum permissions in the Domains category to work with the plugin: `See and renew domain names` & `Manage domain name technical configurations`.
 
-2. Install the plugin and ensure the old plugin name variant is not present:
+2. Install the modern plugin and ensure the "non-modern" or "older package name" variants are not present:
    ```sh
-   pip uninstall certbot-plugin-gandi
-   pip install certbot-dns-gandi>=1.6.0
+   pip uninstall certbot-plugin-gandi certbot-plugin-gandi-modern
+   pip install certbot-dns-gandi-modern>=1.6.2
    ```
-   
+
 3. Create a `/etc/letsencrypt/gandi.ini` config file with the following contents:
    ```conf
    # Gandi personal access token
    dns_gandi_token=PERSONAL_ACCESS_TOKEN
-
-   # optional organization id, remove it if not used
-   dns_gandi_sharing_id=SHARINGID
    ```
    Replace `PERSONAL_ACCESS_TOKEN` with your Gandi personal access token.
+   You can also use a Gandi LiveDNS API Key instead, see FAQ below.
   
-4. Ensure permissions are set on `/etc/letsencrypt/gandi.ini` config file to disallow access from other users, e.g., using `chmod 0600 /etc/letsencrypt/gandi.ini`
+4. Ensure permissions are set to disallow access from other users, e.g., using `chmod 0600 gandi.ini`
 
 5. Run `certbot` and direct it to use the plugin for authentication with the config file:
    ```sh
    certbot certonly --authenticator dns-gandi --dns-gandi-credentials /etc/letsencrypt/gandi.ini -d example.com
    # or
    certbot renew --authenticator dns-gandi --dns-gandi-credentials /etc/letsencrypt/gandi.ini
+   ```
+
+For **backwards-compatibility** with the "non-modern" variant of the plugin, the modern variant uses the same authenticator and credentials CLI argument names. Make sure to uninstall any "non-modern" packages to avoid shadowing of CLI argument names.
 
 Please note that this solution is usually not relevant if you're using Gandi's web hosting services as Gandi offers free automated certificates for all simplehosting plans having SSL in the admin interface.
 
@@ -43,16 +44,15 @@ Be aware that the plugin configuration must be provided by CLI, configuration fo
 
 ## Distribution
 
-PyPI is the upstream distribution channel, other channels are not maintained by me.
+PyPI is currently the only distribution mechanism for this "modern" variant of the `certbot-plugin-gandi-modern` package.
 
-* PyPI: https://pypi.org/project/certbot-dns-gandi
-* Archlinux: https://aur.archlinux.org/packages/certbot-dns-gandi-git/
-* Debian: https://packages.debian.org/sid/main/python3-certbot-dns-gandi
-* PyPI: https://pypi.org/project/certbot-dns-gandi/
+Other channels, as well as the "non-modern" variants are not maintained by me.
+
+* PyPI: https://pypi.org/project/certbot-dns-gandi-modern/
 
 ```sh
-pip uninstall certbot-plugin-gandi
-pip install certbot-dns-gandi>=1.6.0
+pip uninstall certbot-plugin-gandi certbot-plugin-gandi-modern
+pip install certbot-dns-gandi-modern>=1.6.2
 ```
 
 Installing this plugin from PyPI using `pip` will also install a recent version of certbot itself, which may conflict with any other certbot already installed on your system. See the provided `Dockerfile` on how to containerize certbot + the plugin to run together.
@@ -62,7 +62,7 @@ Installing this plugin from PyPI using `pip` will also install a recent version 
 This plugin is particularly useful when you need to obtain a wildcard certificate using dns challenges:
 
 ```
-certbot certonly --authenticator dns-gandi --dns-gandi-credentials /etc/letsencrypt/gandi/gandi.ini -d domain.com -d \*.domain.com --server https://acme-v02.api.letsencrypt.org/directory
+certbot certonly --authenticator dns-gandi --dns-gandi-credentials /etc/letsencrypt/gandi.ini -d example.com -d \*.example.com
 ```
 
 ## Automatic renewal
@@ -70,18 +70,18 @@ certbot certonly --authenticator dns-gandi --dns-gandi-credentials /etc/letsencr
 You can setup automatic renewal using `crontab` with the following job for weekly renewal attempts:
 
 ```
-0 0 * * 0 certbot renew -q --authenticator dns-gandi --dns-gandi-credentials /etc/letsencrypt/gandi/gandi.ini --server https://acme-v02.api.letsencrypt.org/directory
+0 0 * * 0 certbot renew -q --authenticator dns-gandi --dns-gandi-credentials /etc/letsencrypt/gandi.ini
 ```
 
 ## Reading material
 
-* A [blog post](https://www.linux.it/~ema/posts/letsencrypt-the-manual-plugin-is-not-working/) by [@realEmaRocca](https://twitter.com/realEmaRocca) describing how to use this plugin on Debian
+* A [blog post](https://www.linux.it/~ema/posts/letsencrypt-the-manual-plugin-is-not-working/) by [@realEmaRocca](https://twitter.com/realEmaRocca) describing how to use this plugin on Debian.
+
+Keep in mind that this blog post references the "non-modern" variant - so make to install and use the correct "modern" variant if needed.
 
 ## FAQ
 
-> What's `certbot-plugin-gandi` and `certbot-dns-gandi` ?
-
-Decision was taken to adapt the name of the plugin to the common DNS plugin naming convention `certbot-dns-*` so the legacy package `certbot-plugin-gandi` will be deprecated in favor of `certbot-dns-gandi`.
+Make sure to uninstall and remove any trace of the "non-modern" or "older package name" variants `certbot-plugin-gandi` and `certbot-plugin-gandi-modern` package.
 
 > I don't have a personal access token, only a Gandi LiveDNS API Key
 
@@ -100,3 +100,5 @@ This Gandi plugin is a third-party plugin mainly because this plugin is not offi
 ## Credits
 
 Huge thanks to Michael Porter for its [original work](https://gitlab.com/sudoliyang/certbot-plugin-gandi) !
+
+Huge thanks to Yohann Leon for the [continuation of this work](https://github.com/obynio/certbot-plugin-gandi) !
