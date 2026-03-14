@@ -42,17 +42,20 @@ classifiers = [
 ]
 
 [project.entry-points."certbot.plugins"]
-dns-gandi = "certbot_dns_gandi.main:Authenticator"
+dns-gandi = "certbot_dns_gandi_modern.main:Authenticator"
 
 [project.urls]
 Homepage = "https://github.com/Kriechi/certbot-dns-gandi-modern"
 
 [tool.hatch.version]
-path = "certbot_dns_gandi/__init__.py"
+path = "certbot_dns_gandi_modern/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["certbot_dns_gandi_modern"]
 
 [tool.hatch.build.targets.sdist]
 include = [
-    "/certbot_dns_gandi",
+    "/certbot_dns_gandi_modern",
 ]
 exclude = [
     "/dist/",

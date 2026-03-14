@@ -1,3 +1,3 @@
 FROM certbot/certbot:latest
 
-RUN pip install certbot-plugin-gandi-modern
+RUN pip install certbot-dns-gandi-modern
