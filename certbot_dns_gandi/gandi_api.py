@@ -1,3 +1,4 @@
+from typing import Optional
 import requests
 
 from dataclasses import dataclass
@@ -6,13 +7,13 @@ from certbot.plugins import dns_common
 @dataclass
 class _GandiConfig:
     sharing_id: str
-    personal_access_token: str
+    personal_access_token: Optional[str]
 
 @dataclass
 class _BaseDomain:
     fqdn: str
 
-def get_config(sharing_id, personal_access_token=None):
+def get_config(sharing_id, personal_access_token: Optional[str]=None):
     return _GandiConfig(
         sharing_id=sharing_id,
         personal_access_token=personal_access_token,
@@ -31,8 +32,8 @@ def _get_response_message(response, default="<No reason given>"):
 
 
 def _headers(cfg):
-    if cfg.personal_access_token:
-        auth = "Bearer " + cfg.personal_access_token
+    assert cfg.personal_access_token is not None, "Personal access token is required for authentication"
+    auth = "Bearer " + cfg.personal_access_token
     return {
         "Content-Type": "application/json",
         "Authorization": auth,

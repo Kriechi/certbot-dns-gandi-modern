@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 import uuid
 
 from certbot import interfaces, errors
@@ -24,7 +25,7 @@ class Authenticator(dns_common.DNSAuthenticator):
 
     def __init__(self, config, name, **kwargs):
         super(Authenticator, self).__init__(config, name, **kwargs)
-        self.credentials = None
+        self.credentials: Optional[dns_common.CredentialsConfiguration] = None
 
     @classmethod
     def add_parser_arguments(cls, add):  # pylint: disable=arguments-differ
